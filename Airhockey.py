@@ -12,10 +12,10 @@ NUM_OF_PACKS = 0
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-pygame.mixer.init()
+pygame.mixer.init() #音楽の初期化
 
-pygame.mixer.music.load("BGM.mp3")
-pygame.mixer.music.play(-1)
+pygame.mixer.music.load("BGM.mp3") #音楽ファイルの指定
+pygame.mixer.music.play(-1) #音楽をループ
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     """
@@ -161,11 +161,9 @@ class Score:
         screen.blit(self.img, self.rct)
 
 def title(screen):
-    """
-    タイトルに表情される画像のロード、文字の形態を決定
-    タイトルや開始条件を表示しつつ、その間はプログラムを停止させている
+    #タイトルに表情される画像のロード、文字の形態を決定
+    #タイトルや開始条件を表示しつつ、その間はプログラムを停止させている
 
-    """
     bg_img = pg.image.load("pic/title.jpg") 
     fonto_title1 = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 120)
     fonto_start = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 40)
@@ -191,7 +189,7 @@ def main():
     COUNTER = 0 #スコアを格納する変数
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    title(screen)    
+    title(screen)  #title関数を呼び出しタイトルを表示
     bg_img = pg.image.load("pic/download.jpg")
     bird = Smasher((300, 200))
     beam = None
