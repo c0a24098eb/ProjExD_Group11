@@ -7,6 +7,7 @@ import pygame as pg
 
 WIDTH = 1100  # ゲームウィンドウの幅
 HEIGHT = 650  # ゲームウィンドウの高さ
+NUM_OF_BOMBS = 1
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
@@ -100,6 +101,44 @@ def main():
         smasher1.update(key_lst, screen)
         smasher2.update(key_lst, screen)
         pg.display.update()
+    COUNTER = 0 #スコアを格納する変数
+    pg.display.set_caption("たたかえ！こうかとん")
+    screen = pg.display.set_mode((WIDTH, HEIGHT))    
+    bg_img = pg.image.load("fig/pg_bg.jpg")
+    bird = Bird((300, 200))
+    bombs = [Bomb((105, 105, 105), 35) for _ in range(NUM_OF_BOMBS)]
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                return
+        screen.blit(bg_img, [0, 0])
+        
+        # if bomb is not None:
+        for bomb in bombs:
+             if smasher1.rct.colliderect(bomb.rct):
+                 # こうかとんに当たったらバウンド
+                 bomb.vx *= -1
+                 bomb.vy *= -1
+        for bomb in bombs:
+             if smasher2.rct.colliderect(bomb.rct):
+                 # こうかとんに当たったらバウンド
+                 bomb.vx *= -1
+                 bomb.vy *= -1
+
+        
+        
+
+        key_lst = pg.key.get_pressed()
+        bird.update(key_lst, screen) 
+        #Scoreクラスのインスタンスを作成し、updateメソッドでblit
+        score = Score(COUNTER)
+        score.update(screen)
+        for bomb in bombs:
+            bomb.update(screen)
+        pg.display.update()
+        # tmr += 1
+        # clock.tick(200)
+
 
 if __name__ == "__main__":
     pg.init()
