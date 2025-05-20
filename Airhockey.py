@@ -5,10 +5,9 @@ import time
 import pygame as pg
 
 
-WIDTH = 1920  # ゲームウィンドウの幅
-HEIGHT = 1080  # ゲームウィンドウの高さ
+WIDTH = 1100  # ゲームウィンドウの幅
+HEIGHT = 650  # ゲームウィンドウの高さ
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     """
@@ -24,191 +23,83 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     return yoko, tate
 
 
-class Smasher:
+class Smasher1:
     """
-    操作するスマッシャーに関するクラス
+    1Pが操作するスマッシャーに関するクラス
     """
-#     delta = {  # 押下キーと移動量の辞書
-#         pg.K_UP: (0, -5),
-#         pg.K_DOWN: (0, +5),
-#         pg.K_LEFT: (-5, 0),
-#         pg.K_RIGHT: (+5, 0),
-#     }
-#     img0 = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
-#     img = pg.transform.flip(img0, True, False)  # デフォルトのこうかとん（右向き）
-#     imgs = {  # 0度から反時計回りに定義
-#         (+5, 0): img,  # 右
-#         (+5, -5): pg.transform.rotozoom(img, 45, 0.9),  # 右上
-#         (0, -5): pg.transform.rotozoom(img, 90, 0.9),  # 上
-#         (-5, -5): pg.transform.rotozoom(img0, -45, 0.9),  # 左上
-#         (-5, 0): img0,  # 左
-#         (-5, +5): pg.transform.rotozoom(img0, 45, 0.9),  # 左下
-#         (0, +5): pg.transform.rotozoom(img, -90, 0.9),  # 下
-#         (+5, +5): pg.transform.rotozoom(img, -45, 0.9),  # 右下
-#     }
 
-#     def __init__(self, xy: tuple[int, int]):
-#         """
-#         こうかとん画像Surfaceを生成する
-#         引数 xy：こうかとん画像の初期位置座標タプル
-#         """
-#         self.img = __class__.imgs[(+5, 0)]
-#         self.rct: pg.Rect = self.img.get_rect()
-#         self.rct.center = xy
+    delta1 = {  # 押下キーと移動量の辞書(1P)
+        pg.K_w: (0, -1),
+        pg.K_s: (0, +1),
+        pg.K_a: (-1, 0),
+        pg.K_d: (+1, 0),
+    }
 
-#     def change_img(self, num: int, screen: pg.Surface):
-#         """
-#         こうかとん画像を切り替え，画面に転送する
-#         引数1 num：こうかとん画像ファイル名の番号
-#         引数2 screen：画面Surface
-#         """
-#         self.img = pg.transform.rotozoom(pg.image.load(f"fig/{num}.png"), 0, 0.9)
-#         screen.blit(self.img, self.rct)
+    def __init__(self, xy: tuple[int, int]):
+        self.img = pg.Surface((100, 100))
+        pg.draw.circle(self.img, (255, 0, 0), (50, 50), 50)
+        self.img.set_colorkey((0, 0, 0))
+        self.rct: pg.Rect = self.img.get_rect()
+        self.rct.center = xy
 
-#     def update(self, key_lst: list[bool], screen: pg.Surface):
-#         """
-#         押下キーに応じてこうかとんを移動させる
-#         引数1 key_lst：押下キーの真理値リスト
-#         引数2 screen：画面Surface
-#         """
-#         sum_mv = [0, 0]
-#         for k, mv in __class__.delta.items():
-#             if key_lst[k]:
-#                 sum_mv[0] += mv[0]
-#                 sum_mv[1] += mv[1]
-#         self.rct.move_ip(sum_mv)
-#         if check_bound(self.rct) != (True, True):
-#             self.rct.move_ip(-sum_mv[0], -sum_mv[1])
-#         if not (sum_mv[0] == 0 and sum_mv[1] == 0):
-#             self.img = __class__.imgs[tuple(sum_mv)]
-#         screen.blit(self.img, self.rct)
+    def update(self, key_lst: list[bool], screen: pg.Surface):
+        sum_mv = [0, 0]
+        for k, mv in __class__.delta1.items():
+            if key_lst[k]:
+                sum_mv[0] += mv[0]
+                sum_mv[1] += mv[1]
+        self.rct.move_ip(sum_mv)
+        if check_bound(self.rct) != (True, True):
+            self.rct.move_ip(-sum_mv[0], -sum_mv[1])
+        screen.blit(self.img, self.rct)
 
-
-# class Beam:
-#     """
-#     こうかとんが放つビームに関するクラス
-#     """
-#     def __init__(self, bird:"Bird"):
-#         """
-#         ビーム画像Surfaceを生成する
-#         引数 bird：ビームを放つこうかとん（Birdインスタンス）
-#         """
-#         self.img = pg.image.load(f"fig/beam.png")
-#         self.rct = self.img.get_rect()
-#         self.rct.centery = bird.rct.centery
-#         self.rct.left = bird.rct.right
-#         self.vx, self.vy = +5, 0
-
-#     def update(self, screen: pg.Surface):
-#         """
-#         ビームを速度ベクトルself.vx, self.vyに基づき移動させる
-#         引数 screen：画面Surface
-#         """
-#         if check_bound(self.rct) == (True, True):
-#             self.rct.move_ip(self.vx, self.vy)
-#             screen.blit(self.img, self.rct)    
-
-
-class Pack:
+class Smasher2:
     """
-    パックに関するクラス
+    2Pが操作するスマッシャーに関するクラス
     """
-#     def __init__(self, color: tuple[int, int, int], rad: int):
-#         """
-#         引数に基づき爆弾円Surfaceを生成する
-#         引数1 color：爆弾円の色タプル
-#         引数2 rad：爆弾円の半径
-#         """
-#         self.img = pg.Surface((2*rad, 2*rad))
-#         pg.draw.circle(self.img, color, (rad, rad), rad)
-#         self.img.set_colorkey((0, 0, 0))
-#         self.rct = self.img.get_rect()
-#         self.rct.center = random.randint(0, WIDTH), random.randint(0, HEIGHT)
-#         self.vx, self.vy = +5, +5
 
-#     def update(self, screen: pg.Surface):
-#         """
-#         爆弾を速度ベクトルself.vx, self.vyに基づき移動させる
-#         引数 screen：画面Surface
-#         """
-#         yoko, tate = check_bound(self.rct)
-#         if not yoko:
-#             self.vx *= -1
-#         if not tate:
-#             self.vy *= -1
-#         self.rct.move_ip(self.vx, self.vy)
-#         screen.blit(self.img, self.rct)
+    delta2 = {  # 押下キーと移動量の辞書(2P)
+        pg.K_UP:(0, -1,),
+        pg.K_DOWN:(0, +1),
+        pg.K_LEFT:(-1, 0),
+        pg.K_RIGHT:(+1,0),
+    }
 
-# class Score:
-#     """
-#     イニシャライザではフォントと文字色、文字サイズ、
-#     表示位置の設定を行い、updateメソッドでSurfaceを作成しblit
-#     """
-#     def __init__(self, score):
-#         self.fonto = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
-#         self.img = self.fonto.render("スコア：" + str(score), True, (0, 0, 255))
-#         self.rct: pg.Rect = self.img.get_rect()
-#         self.rct.center = (100, HEIGHT-50)
+    def __init__(self, xy: tuple[int, int]):
+        self.img = pg.Surface((100, 100))
+        pg.draw.circle(self.img, (0, 0, 255), (50, 50), 50)
+        self.img.set_colorkey((0, 0, 0))
+        self.rct: pg.Rect = self.img.get_rect()
+        self.rct.center = xy
 
-#     def update(self, screen: pg.Surface):
-#         screen.blit(self.img, self.rct)
-
-
+    def update(self, key_lst: list[bool], screen: pg.Surface):
+        sum_mv = [0, 0]
+        for k, mv in __class__.delta2.items():
+            if key_lst[k]:
+                sum_mv[0] += mv[0]
+                sum_mv[1] += mv[1]
+        self.rct.move_ip(sum_mv)
+        if check_bound(self.rct) != (True, True):
+            self.rct.move_ip(-sum_mv[0], -sum_mv[1])
+        screen.blit(self.img, self.rct)
 
 def main():
-    # COUNTER = 0 #スコアを格納する変数
-    # pg.display.set_caption("たたかえ！こうかとん")
-    # screen = pg.display.set_mode((WIDTH, HEIGHT))    
-    # bg_img = pg.image.load("fig/pg_bg.jpg")
-    # bird = Bird((300, 200))
-    # beam = None
-    # # bomb = Bomb((255, 0, 0), 10)
-    # bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
-    # clock = pg.time.Clock()
-    # tmr = 0
-    # while True:
-    #     for event in pg.event.get():
-    #         if event.type == pg.QUIT:
-    #             return
-    #         if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-    #             # スペースキー押下でBeamクラスのインスタンス生成
-    #             beam = Beam(bird)            
-    #     screen.blit(bg_img, [0, 0])
-        
-    #     # if bomb is not None:
-    #     for bomb in bombs:
-    #          if bird.rct.colliderect(bomb.rct):
-    #              # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
-    #              bird.change_img(8, screen)
-    #              fonto = pg.font.Font(None, 80)
-    #              txt = fonto.render("Game Over", True, (255, 0, 0))
-    #              screen.blit(txt, [WIDTH//2-150, HEIGHT//2])
-    #              pg.display.update()
-    #              time.sleep(1)
-    #              return
-        
-    #     for j, bomb in enumerate(bombs):
-    #         if beam is not None:
-    #             if beam.rct.colliderect(bomb.rct):  # ビームと爆弾の衝突判定
-    #                 beam = None  # ビームを消す
-    #                 bombs[j] = None  # 爆弾を消す
-    #                 bird.change_img(6, screen)
-    #                 COUNTER += 1
-    #         bombs = [bomb for bomb in bombs if bomb is not None]  # 撃ち落とされてない爆弾だけのリストにする
+    pg.display.set_caption("Air hockey")
+    screen = pg.display.set_mode((WIDTH, HEIGHT))
+    bg_img = pg.image.load("pg_bg.jpg")
+    smasher1 = Smasher1([300, 200])
+    smasher2 = Smasher2([800, 200])
 
-    #     key_lst = pg.key.get_pressed()
-    #     bird.update(key_lst, screen) 
-    #     #Scoreクラスのインスタンスを作成し、updateメソッドでblit
-    #     score = Score(COUNTER)
-    #     score.update(screen)
-    #     if beam is not None:
-    #         beam.update(screen)
-    #     for bomb in bombs:
-    #         bomb.update(screen)
-    #     pg.display.update()
-    #     tmr += 1
-    #     clock.tick(50)
+    while True:
+        screen.blit(bg_img, [0, 0])
+        for event in pg.event.get():
+            if event.type == pg.QUIT: 
+                return 
 
+        key_lst = pg.key.get_pressed()
+        smasher1.update(key_lst, screen)
+        smasher2.update(key_lst, screen)
+        pg.display.update()
 
 if __name__ == "__main__":
     pg.init()
