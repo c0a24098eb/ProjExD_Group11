@@ -67,10 +67,10 @@ class Smasher1:
     """
 
     delta1 = {  # 押下キーと移動量の辞書(1P)
-        pg.K_w: (0, -1),
-        pg.K_s: (0, +1),
-        pg.K_a: (-1, 0),
-        pg.K_d: (+1, 0),
+        pg.K_w: (0, -2),
+        pg.K_s: (0, +2),
+        pg.K_a: (-2, 0),
+        pg.K_d: (+2, 0),
     }
 
     def __init__(self, xy: tuple[int, int]):
@@ -98,10 +98,10 @@ class Smasher2:
     """
 
     delta2 = {  # 押下キーと移動量の辞書(2P)
-        pg.K_UP:(0, -1,),
-        pg.K_DOWN:(0, +1),
-        pg.K_LEFT:(-1, 0),
-        pg.K_RIGHT:(+1,0),
+        pg.K_UP:(0, -2,),
+        pg.K_DOWN:(0, +2),
+        pg.K_LEFT:(-2, 0),
+        pg.K_RIGHT:(+2,0),
     }
 
     def __init__(self, xy: tuple[int, int]):
@@ -154,10 +154,19 @@ def main():
     screen.blit(bg_img, [0, 0])
     smasher1 = Smasher1([300, 200])
     smasher2 = Smasher2([800, 200])
-    puck = Puck((105, 105, 105), 35)
+    puck = Puck((105, 105, 105), 20)
+
+    score1, score2 = 0, 0#スコア
+    left_goal = pg.Rect(0, 280 - 75, 10, 250)#ゴール
+    right_goal = pg.Rect(WIDTH - 10, 280 - 75, 10, 250)
+    
 
     while True:
         screen.blit(bg_img, [0, 0])
+
+        pg.draw.rect(screen, (255, 255, 0), left_goal)#ゴール
+        pg.draw.rect(screen, (255, 255, 0), right_goal)
+
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return 
@@ -178,9 +187,51 @@ def main():
             #Scoreクラスのインスタンスを作成し、updateメソッドでblit
             # score = Score(COUNTER)
             # score.update(screen)
-        pg.display.update()
+    
             # tmr += 1
             # clock.tick(200)
+
+        if puck.rct.colliderect(left_goal):
+            score2 += 1
+            puck.rct.center = (WIDTH//2, HEIGHT//2)
+            puck.vx, puck.vy = 0, 0  # 一時停止
+            screen.blit(bg_img, [0, 0])
+            screen.blit(puck.img, puck.rct)
+            screen.blit(smasher1.img, smasher1.rct)
+            screen.blit(smasher2.img, smasher2.rct)
+            pg.draw.rect(screen, (255, 255, 0), left_goal)
+            pg.draw.rect(screen, (255, 255, 0), right_goal)
+            font = pg.font.Font(None, 50)
+            score_txt = font.render(f"P1: {score1}  P2: {score2}", True, (255, 255, 255))
+            screen.blit(score_txt, (WIDTH//2 - 100, 10))
+            pg.display.update()
+            time.sleep(1)
+            puck.vx = random.choice([1, 1])
+            puck.vy = random.choice([-3, -2, 2, 3])
+
+        # ← 変更点：右ゴールに入ったらP1得点
+        if puck.rct.colliderect(right_goal):
+            score1 += 1
+            puck.rct.center = (WIDTH//2, HEIGHT//2)
+            puck.vx, puck.vy = 0, 0  # 一時停止
+            screen.blit(bg_img, [0, 0])
+            screen.blit(puck.img, puck.rct)
+            screen.blit(smasher1.img, smasher1.rct)
+            screen.blit(smasher2.img, smasher2.rct)
+            pg.draw.rect(screen, (255, 255, 0), left_goal)
+            pg.draw.rect(screen, (255, 255, 0), right_goal)
+            font = pg.font.Font(None, 50)
+            score_txt = font.render(f"P1: {score1}  P2: {score2}", True, (255, 255, 255))
+            screen.blit(score_txt, (WIDTH//2 - 100, 10))
+            pg.display.update()
+            time.sleep(1)
+            puck.vx = random.choice([-1, -1])
+            puck.vy = random.choice([-3, -2, 2, 3])
+
+        # ← 変更点：スコアを画面に表示
+        font = pg.font.Font(None, 50)
+        score_txt = font.render(f"P1: {score1}  P2: {score2}", True, (255, 255, 255))
+        screen.blit(score_txt, (WIDTH//2 - 100, 10))
 
         pg.display.update()
 
