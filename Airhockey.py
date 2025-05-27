@@ -31,6 +31,7 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
 class Puck:
     """
     puckに関するクラス
+    引数は色タプルと円の半径
     """
     def __init__(self, color: tuple[int, int, int], rad: int):
         """
@@ -63,6 +64,7 @@ class Puck:
 class Smasher1:
     """
     1Pが操作するスマッシャーに関するクラス
+    delta1に応じて移動する赤色の円形オブジェクト
     """
 
     delta1 = {  # 押下キーと移動量の辞書(1P)
@@ -94,6 +96,7 @@ class Smasher1:
 class Smasher2:
     """
     2Pが操作するスマッシャーに関するクラス
+    delta2に応じて移動する青色の円形オブジェクト
     """
 
     delta2 = {  # 押下キーと移動量の辞書(2P)
