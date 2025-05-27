@@ -3,7 +3,6 @@ import random
 import sys
 import time
 import pygame as pg
-import pygame
 
 
 WIDTH = 1100  # ゲームウィンドウの幅
@@ -11,10 +10,10 @@ HEIGHT = 650  # ゲームウィンドウの高さ
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-pygame.mixer.init() #音楽の初期化
+pg.mixer.init() #音楽の初期化
 
-pygame.mixer.music.load("BGM.mp3") #音楽ファイルの指定
-pygame.mixer.music.play(-1) #音楽をループ
+pg.mixer.music.load("BGM.mp3") #音楽ファイルの指定
+pg.mixer.music.play(-1) #音楽をループ
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     """
