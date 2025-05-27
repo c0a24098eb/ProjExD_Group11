@@ -122,20 +122,47 @@ class Smasher2:
             self.rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(self.img, self.rct)
         # pg.display.update()
+
+def render_outline_text(font, message, fg_color, outline_c, outline_width):
+    """
+    タイトル画面の文字列に外枠を増やす
+    """
+
+    base = font.render(message, True, fg_color)
+    size = base.get_width() + 2 * outline_width, base.get_height() + 2 * outline_width
+    outline = pg.Surface(size, pg.SRCALPHA)
+
+    # 輪郭用の文字
+    for dx in range(-outline_width, outline_width + 1):
+        for dy in range(-outline_width, outline_width + 1):
+            if dx != 0 or dy != 0:
+                img = font.render(message, True, outline_c)
+                outline.blit(img, (dx + outline_width, dy + outline_width))
+
+    # 中央に本来の文字
+    outline.blit(base, (outline_width, outline_width))
+    return outline
+
 def title(screen):
-    #タイトルに表情される画像のロード、文字の形態を決定
-    #タイトルや開始条件を表示しつつ、その間はプログラムを停止させている
+    """
+    タイトルに表情される画像のロード、文字の形態を決定
+    タイトルや開始条件を表示しつつ、その間はプログラムを停止させている
+    """
 
     bg_img = pg.image.load("pic/title.jpg") 
-    fonto_title1 = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 120)
+    fonto_title = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 120)
     fonto_start = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 40)
+ 
 
     while True:
         screen.blit(bg_img, (0, 0))
-        title_w = fonto_title1.render("エアホッケー", True, (255, 255, 0))
+        title_w = render_outline_text(fonto_title, "エアホッケー", (255, 255, 0), (0, 0, 0), 3)
+        screen.blit(title_w, (WIDTH // 2 - title_w.get_width() // 2, HEIGHT // 3))
+        title_w = fonto_title.render("エアホッケー", True, (255, 255, 0))
         start_UI = fonto_start.render("スペースキーでスタート", True, (100, 100, 100))
         screen.blit(title_w, (WIDTH//2 - title_w.get_width()//2, HEIGHT//3))
         screen.blit(start_UI, (WIDTH//2 - start_UI.get_width()//2, HEIGHT//2 + 100))
+        
 
         pg.display.update()
 
@@ -145,11 +172,38 @@ def title(screen):
                 sys.exit()
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 return
+            
+def countdown(screen):
+    """
+    タイトルでスペースを押した後、
+    ３秒のカウントダウン
+    """
+    bg_img = pg.image.load("pic/download.jpg")
+    font_c = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 150)
+    font_in = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 40)
+
+    for i in range(4, 0, -1):
+        screen.blit(bg_img, (0, 0))
+
+        c_txt = font_c.render(str(i), True, (255, 255, 255))
+        info1 = font_in.render("1P操作：WASDキー", True, (255, 100, 100))
+        info2 = font_in.render("2P操作：↑ ↓ ← → キー", True, (100, 100, 255))
+        info3 = font_in.render("スマッシャーでパックを弾いて相手のゴールを狙おう！", True, (255, 255, 0))
+
+        screen.blit(c_txt, (WIDTH // 2 - c_txt.get_width() // 2, HEIGHT // 2 - 100))
+        screen.blit(info1, (WIDTH // 2 - info1.get_width() // 2, HEIGHT -150))
+        screen.blit(info2, (WIDTH // 2 - info2.get_width() // 2, HEIGHT -100))
+        screen.blit(info3, (WIDTH // 2 - info3.get_width() // 2, HEIGHT -50))
+
+        pg.display.update()
+        pg.time.delay(1000)  # 1sec
+
 
 def main():
     pg.display.set_caption("Air hockey")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     title(screen)  #title関数を呼び出しタイトルを表示
+    countdown(screen)   #countdown関数を呼び出して表示
     bg_img = pg.image.load("pic/download.jpg")
     screen.blit(bg_img, [0, 0])
     smasher1 = Smasher1([300, 200])
