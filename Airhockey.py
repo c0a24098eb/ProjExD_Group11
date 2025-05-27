@@ -134,21 +134,15 @@ def main():
         smasher1.update(key_lst, screen)
         smasher2.update(key_lst, screen)
         puck.update(screen)
-
-        COUNTER = 0 #スコアを格納する変数
+        
         if smasher1.rct.colliderect(puck.rct):
-            # こうかとんに当たったらバウンド
+            # スマッシャーに当たったらバウンド
             puck.vx *= -1
             puck.vy *= -1
         if smasher2.rct.colliderect(puck.rct):
-            # こうかとんに当たったらバウンド
+            # スマッシャーに当たったらバウンド
             puck.vx *= -1
             puck.vy *= -1
-
-            
-            
-
-
             #Scoreクラスのインスタンスを作成し、updateメソッドでblit
             # score = Score(COUNTER)
             # score.update(screen)
@@ -156,6 +150,7 @@ def main():
             # tmr += 1
             # clock.tick(200)
 
+        pg.display.update()
 
 if __name__ == "__main__":
     pg.init()
