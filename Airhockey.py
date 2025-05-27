@@ -3,11 +3,18 @@ import random
 import sys
 import time
 import pygame as pg
+import pygame
 
 
 WIDTH = 1100  # ゲームウィンドウの幅
 HEIGHT = 650  # ゲームウィンドウの高さ
+
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+pygame.mixer.init() #音楽の初期化
+
+pygame.mixer.music.load("BGM.mp3") #音楽ファイルの指定
+pygame.mixer.music.play(-1) #音楽をループ
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     """
@@ -51,6 +58,7 @@ class Puck:
         screen.blit(self.img, self.rct)
         # pg.display.update()
 
+    
 
 
 class Smasher1:
@@ -114,11 +122,35 @@ class Smasher2:
             self.rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(self.img, self.rct)
         # pg.display.update()
+def title(screen):
+    #タイトルに表情される画像のロード、文字の形態を決定
+    #タイトルや開始条件を表示しつつ、その間はプログラムを停止させている
+
+    bg_img = pg.image.load("pic/title.jpg") 
+    fonto_title1 = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 120)
+    fonto_start = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 40)
+
+    while True:
+        screen.blit(bg_img, (0, 0))
+        title_w = fonto_title1.render("エアホッケー", True, (255, 255, 0))
+        start_UI = fonto_start.render("スペースキーでスタート", True, (100, 100, 100))
+        screen.blit(title_w, (WIDTH//2 - title_w.get_width()//2, HEIGHT//3))
+        screen.blit(start_UI, (WIDTH//2 - start_UI.get_width()//2, HEIGHT//2 + 100))
+
+        pg.display.update()
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                return
 
 def main():
     pg.display.set_caption("Air hockey")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    bg_img = pg.image.load("pg_bg.jpg")
+    title(screen)  #title関数を呼び出しタイトルを表示
+    bg_img = pg.image.load("pic/download.jpg")
     screen.blit(bg_img, [0, 0])
     smasher1 = Smasher1([300, 200])
     smasher2 = Smasher2([800, 200])
@@ -129,7 +161,7 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return 
-
+            
         key_lst = pg.key.get_pressed()
         smasher1.update(key_lst, screen)
         smasher2.update(key_lst, screen)
