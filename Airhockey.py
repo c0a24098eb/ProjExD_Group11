@@ -118,7 +118,7 @@ class Smasher2:
 def main():
     pg.display.set_caption("Air hockey")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    bg_img = pg.image.load("fig/pg_bg.jpg")
+    bg_img = pg.image.load("pg_bg.jpg")
     screen.blit(bg_img, [0, 0])
     smasher1 = Smasher1([300, 200])
     smasher2 = Smasher2([800, 200])
